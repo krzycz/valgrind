@@ -443,7 +443,7 @@ static void instr_trace_mem_store(IRSB* const bb, IRExpr* const addr_expr,
       } else if (size > sizeof(HWord) && !data_expr_hi
                  && ty_data_expr == Ity_I64) {
          IRTemp tmp;
-         
+
          tl_assert(sizeof(HWord) == 4);
          tl_assert(size == 8);
          tmp = newIRTemp(bb->tyenv, Ity_I32);
@@ -633,6 +633,9 @@ IRSB* DRD_(instrument)(VgCallbackClosure* const closure,
          switch (st->Ist.MBE.event)
          {
          case Imbe_Fence:
+         case Imbe_LFence:
+         case Imbe_SFence:
+         case Imbe_Drain:
             break; /* not interesting to DRD */
          case Imbe_CancelReservation:
             break; /* not interesting to DRD */
@@ -794,6 +797,7 @@ IRSB* DRD_(instrument)(VgCallbackClosure* const closure,
       case Ist_Put:
       case Ist_PutI:
       case Ist_Exit:
+      case Ist_Flush:
          /* None of these can contain any memory references. */
          addStmtToIRSB(bb, st);
          break;

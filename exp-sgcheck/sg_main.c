@@ -90,7 +90,7 @@ static void sg_free ( void* p ) {
    some of the comparisons were done signedly instead of
    unsignedly. */
 inline
-static Word cmp_nonempty_intervals ( Addr a1, SizeT n1, 
+static Word cmp_nonempty_intervals ( Addr a1, SizeT n1,
                                      Addr a2, SizeT n2 ) {
    UWord a1w = (UWord)a1;
    UWord n1w = (UWord)n1;
@@ -187,9 +187,9 @@ static Word StackBlock__cmp ( const StackBlock* fb1, const StackBlock* fb2 )
 
 /* Returns True if all fields except .szB are the same.  szBs may or
    may not be the same; they are simply not consulted. */
-static Bool StackBlock__all_fields_except_szB_are_equal ( 
+static Bool StackBlock__all_fields_except_szB_are_equal (
                StackBlock* fb1,
-               StackBlock* fb2 
+               StackBlock* fb2
             )
 {
    tl_assert(StackBlock__sane(fb1));
@@ -229,7 +229,7 @@ static void pp_StackBlocks ( XArray* sbs )
       VG_(message)(Vg_DebugMsg,
          "   StackBlock{ off %ld szB %lu spRel:%c isVec:%c \"%s\" }\n",
          sb->base, sb->szB, sb->spRel ? 'Y' : 'N',
-         sb->isVec ? 'Y' : 'N', &sb->name[0] 
+         sb->isVec ? 'Y' : 'N', &sb->name[0]
       );
    }
    VG_(message)(Vg_DebugMsg, ">>> STACKBLOCKS\n" );
@@ -245,7 +245,7 @@ static void init_StackBlocks_set ( void )
 {
    tl_assert(!frameBlocks_set);
    frameBlocks_set
-      = VG_(newFM)( sg_malloc, "di.sg_main.iSBs.1", sg_free, 
+      = VG_(newFM)( sg_malloc, "di.sg_main.iSBs.1", sg_free,
                     (Word(*)(UWord,UWord))StackBlocks__cmp );
    tl_assert(frameBlocks_set);
 }
@@ -421,7 +421,7 @@ static void init_GlobalBlock_set ( void )
 {
    tl_assert(!globalBlock_set);
     globalBlock_set
-       = VG_(newFM)( sg_malloc, "di.sg_main.iGBs.1", sg_free, 
+       = VG_(newFM)( sg_malloc, "di.sg_main.iGBs.1", sg_free,
                      (Word(*)(UWord,UWord))GlobalBlock__cmp );
    tl_assert(globalBlock_set);
 }
@@ -569,7 +569,7 @@ static void add_blocks_to_StackTree (
 }
 
 static void del_blocks_from_StackTree ( /*MOD*/WordFM* sitree,
-                                        XArray* /* Addr */ bases ) 
+                                        XArray* /* Addr */ bases )
 {
    UWord oldK, oldV;
    Word i, nBases = VG_(sizeXA)( bases );
@@ -616,7 +616,7 @@ static WordFM* new_StackTree ( void ) {
 //                                                          //
 //////////////////////////////////////////////////////////////
 
-/* A node in a global interval tree.  Zero length intervals 
+/* A node in a global interval tree.  Zero length intervals
    (.szB == 0) are not allowed.
 
    A global interval tree is a (WordFM GlobalTreeNode* void).  There
@@ -632,7 +632,7 @@ typedef
 
 static void GlobalTreeNode__pp ( GlobalTreeNode* nd ) {
    tl_assert(nd->descr);
-   VG_(printf)("GTNode [%#lx,+%ld) %s", 
+   VG_(printf)("GTNode [%#lx,+%ld) %s",
                nd->addr, nd->szB, nd->descr->name);
 }
 
@@ -843,7 +843,7 @@ typedef
 static void pp_Invar ( Invar* i )
 {
    switch (i->tag) {
-      case Inv_Unset: 
+      case Inv_Unset:
          VG_(printf)("Unset");
          break;
       case Inv_Unknown:
@@ -1068,7 +1068,7 @@ static void ourGlobals_init ( void )
       siTrees[i] = NULL;
    }
    invalidate_all_QCaches();
-   giTree = VG_(newFM)( sg_malloc, "di.sg_main.oGi.1", sg_free, 
+   giTree = VG_(newFM)( sg_malloc, "di.sg_main.oGi.1", sg_free,
                         (Word(*)(UWord,UWord))cmp_intervals_GlobalTreeNode );
 }
 
@@ -1092,7 +1092,7 @@ static void acquire_globals ( ULong di_handle )
    for (i = 0; i < n; i++) {
       GlobalBlock* gbp;
       GlobalBlock* gb = VG_(indexXA)( gbs, i );
-      if (0) VG_(printf)("   new Global size %2lu at %#lx:  %s %s\n", 
+      if (0) VG_(printf)("   new Global size %2lu at %#lx:  %s %s\n",
                          gb->szB, gb->addr, gb->soname, gb->name );
       tl_assert(gb->szB > 0);
       /* Make a persistent copy of each GlobalBlock, and add it
@@ -1302,7 +1302,7 @@ static void preen_global_Invars ( Addr a, SizeT len )
                continue; /* not in use */
             if (0) { pp_Invar(&ii->invar); VG_(printf)(" x\n"); }
             preen_global_Invar( &ii->invar, a, len );
-            xx++;           
+            xx++;
          }
          tl_assert(xx == frame->htab_used);
       }
@@ -1387,7 +1387,7 @@ static void resize_II_hash_table ( StackFrame* sf )
 
 __attribute__((noinline))
 static IInstance* find_or_create_IInstance_SLOW (
-                     StackFrame* sf, 
+                     StackFrame* sf,
                      Addr ip,
                      XArray* /* StackBlock */ ip_frameblocks
                   )
@@ -1405,7 +1405,7 @@ static IInstance* find_or_create_IInstance_SLOW (
       resize_II_hash_table(sf);
    }
    tl_assert(2 * sf->htab_used <= sf->htab_size);
-  
+
    ix = compute_II_hash(ip, sf->htab_size);
    i = sf->htab_size;
    while (1) {
@@ -1444,7 +1444,7 @@ static IInstance* find_or_create_IInstance_SLOW (
 
 inline
 static IInstance* find_or_create_IInstance (
-                     StackFrame* sf, 
+                     StackFrame* sf,
                      Addr ip,
                      XArray* /* StackBlock */ ip_frameblocks
                   )
@@ -1504,7 +1504,7 @@ static XArray* /* Addr */ calculate_StackBlock_EAs (
 /* Try to classify the block into which a memory access falls, and
    write the result in 'inv'.  This writes all relevant fields of
    'inv'. */
-__attribute__((noinline)) 
+__attribute__((noinline))
 static void classify_address ( /*OUT*/Invar* inv,
                                ThreadId tid,
                                Addr ea, Addr sp, Addr fp,
@@ -1514,7 +1514,7 @@ static void classify_address ( /*OUT*/Invar* inv,
    tl_assert(szB > 0);
    /* First, look in the stack blocks accessible in this instruction's
       frame. */
-   { 
+   {
      Word i, nBlocks = VG_(sizeXA)( thisInstrBlocks );
      if (nBlocks == 0) stats__t_i_b_empty++;
      for (i = 0; i < nBlocks; i++) {
@@ -1642,7 +1642,7 @@ static void classify_address ( /*OUT*/Invar* inv,
            gKey.szB  = szB;
            if (0) VG_(printf)("Tree sizes %ld %ld\n",
                               VG_(sizeFM)(siTrees[tid]), VG_(sizeFM)(giTree));
-           sOK = VG_(findBoundsFM)( siTrees[tid], 
+           sOK = VG_(findBoundsFM)( siTrees[tid],
                                     (UWord*)&sLB,    NULL/*unused*/,
                                     (UWord*)&sUB,    NULL/*unused*/,
                                     (UWord)&sNegInf, 0/*unused*/,
@@ -1758,7 +1758,7 @@ static void classify_address ( /*OUT*/Invar* inv,
 
 
 /* CALLED FROM GENERATED CODE */
-static 
+static
 VG_REGPARM(3)
 void helperc__mem_access ( /* Known only at run time: */
                            Addr ea, Addr sp, Addr fp,
@@ -1872,7 +1872,7 @@ void shadowStack_new_frame ( ThreadId tid,
          = calculate_StackBlock_EAs( descrs_at_call_insn,
                                      sp_at_call_insn, fp_at_call_insn );
       if (caller->blocks_added_by_call)
-         add_blocks_to_StackTree( siTrees[tid], 
+         add_blocks_to_StackTree( siTrees[tid],
                                   descrs_at_call_insn,
                                   caller->blocks_added_by_call,
                                   caller->depth /* stack depth at which
@@ -1886,7 +1886,7 @@ void shadowStack_new_frame ( ThreadId tid,
          if (sb) stats__max_sitree_size = s;
          if (gb) stats__max_gitree_size = g;
          if (0 && (sb || gb))
-            VG_(message)(Vg_DebugMsg, 
+            VG_(message)(Vg_DebugMsg,
                          "exp-sgcheck: new max tree sizes: "
                          "StackTree %ld, GlobalTree %ld\n",
                          stats__max_sitree_size, stats__max_gitree_size );
@@ -2041,7 +2041,7 @@ static void shadowStack_unwind ( ThreadId tid, Addr sp_now )
    - at each Call transfer, generate a call to shadowStack_new_frame
      do this by manually inspecting the IR
 
-   - at each sp change, if the sp change is negative, 
+   - at each sp change, if the sp change is negative,
      call shadowStack_unwind
      do this by asking for SP-change analysis
 
@@ -2115,7 +2115,7 @@ static IRTemp gen_Get_FP ( struct _SGEnv*  sge,
 }
 
 static void instrument_mem_access ( struct _SGEnv* sge,
-                                    IRSB*   bbOut, 
+                                    IRSB*   bbOut,
                                     IRExpr* addr,
                                     Int     szB,
                                     Bool    isStore,
@@ -2162,8 +2162,8 @@ static void instrument_mem_access ( struct _SGEnv* sge,
                          mkIRExpr_HWord( curr_IP ),
                          mkIRExpr_HWord( (HWord)frameBlocks ) );
      IRDirty* di
-        = unsafeIRDirty_0_N( 3/*regparms*/, 
-                             "helperc__mem_access", 
+        = unsafeIRDirty_0_N( 3/*regparms*/,
+                             "helperc__mem_access",
                             VG_(fnptr_to_fnentry)( &helperc__mem_access ),
                              args );
 
@@ -2196,7 +2196,7 @@ void sg_instrument_fini ( struct _SGEnv * env )
 /* Add instrumentation for 'st' to 'sbOut', and possibly modify 'env'
    as required.  This must be called before 'st' itself is added to
    'sbOut'. */
-void sg_instrument_IRStmt ( /*MOD*/struct _SGEnv * env, 
+void sg_instrument_IRStmt ( /*MOD*/struct _SGEnv * env,
                             /*MOD*/IRSB* sbOut,
                             IRStmt* st,
                             VexGuestLayout* layout,
@@ -2213,6 +2213,7 @@ void sg_instrument_IRStmt ( /*MOD*/struct _SGEnv * env,
       case Ist_Put:
       case Ist_PutI:
       case Ist_MBE:
+      case Ist_Flush:
          /* None of these can contain any memory references. */
          break;
 
@@ -2230,9 +2231,9 @@ void sg_instrument_IRStmt ( /*MOD*/struct _SGEnv * env,
       case Ist_Store:
          tl_assert(env->curr_IP_known);
          if (env->firstRef) {
-            instrument_mem_access( 
-               env, sbOut, 
-               st->Ist.Store.addr, 
+            instrument_mem_access(
+               env, sbOut,
+               st->Ist.Store.addr,
                sizeofIRType(typeOfIRExpr(sbOut->tyenv, st->Ist.Store.data)),
                True/*isStore*/,
                sizeofIRType(hWordTy),
@@ -2273,13 +2274,13 @@ void sg_instrument_IRStmt ( /*MOD*/struct _SGEnv * env,
                tl_assert(d->mSize != 0);
                dataSize = d->mSize;
                if (d->mFx == Ifx_Read || d->mFx == Ifx_Modify) {
-                  instrument_mem_access( 
+                  instrument_mem_access(
                      env, sbOut, d->mAddr, dataSize, False/*!isStore*/,
                      sizeofIRType(hWordTy), env->curr_IP, layout
                   );
                }
                if (d->mFx == Ifx_Write || d->mFx == Ifx_Modify) {
-                  instrument_mem_access( 
+                  instrument_mem_access(
                      env, sbOut, d->mAddr, dataSize, True/*isStore*/,
                      sizeofIRType(hWordTy), env->curr_IP, layout
                   );
@@ -2330,7 +2331,7 @@ void sg_instrument_IRStmt ( /*MOD*/struct _SGEnv * env,
 /* Add instrumentation for the final jump of an IRSB 'sbOut', and
    possibly modify 'env' as required.  This must be the last
    instrumentation statement in the block. */
-void sg_instrument_final_jump ( /*MOD*/struct _SGEnv * env, 
+void sg_instrument_final_jump ( /*MOD*/struct _SGEnv * env,
                                 /*MOD*/IRSB* sbOut,
                                 IRExpr* next,
                                 IRJumpKind jumpkind,
@@ -2358,7 +2359,7 @@ void sg_instrument_final_jump ( /*MOD*/struct _SGEnv * env,
       args
          = mkIRExprVec_5(
               IRExpr_RdTmp(sp_post_call_insn),
-              IRExpr_RdTmp(fp_post_call_insn), 
+              IRExpr_RdTmp(fp_post_call_insn),
                          /* assume the call doesn't change FP */
               next,
               mkIRExpr_HWord( (HWord)frameBlocks ),
@@ -2368,7 +2369,7 @@ void sg_instrument_final_jump ( /*MOD*/struct _SGEnv * env,
               3/*regparms*/,
               "helperc__new_frame",
               VG_(fnptr_to_fnentry)( &helperc__new_frame ),
-              args ); 
+              args );
       addStmtToIRSB( sbOut, IRStmt_Dirty(di) );
    }
 }
@@ -2530,13 +2531,13 @@ void sg_fini(Int exitcode)
          stats__Invars_preened, stats__Invars_changed);
       VG_(message)(Vg_DebugMsg,
          " sg_:   t_i_b_MT: %'12llu\n", stats__t_i_b_empty);
-      VG_(message)(Vg_DebugMsg, 
+      VG_(message)(Vg_DebugMsg,
          " sg_:     qcache: %'llu searches, %'llu probes, %'llu misses\n",
          stats__qcache_queries, stats__qcache_probes, stats__qcache_misses);
-      VG_(message)(Vg_DebugMsg, 
+      VG_(message)(Vg_DebugMsg,
          " sg_:  htab-fast: %'llu hits\n",
          stats__htab_fast);
-      VG_(message)(Vg_DebugMsg, 
+      VG_(message)(Vg_DebugMsg,
          " sg_:  htab-slow: %'llu searches, %'llu probes, %'llu resizes\n",
          stats__htab_searches, stats__htab_probes, stats__htab_resizes);
    }
