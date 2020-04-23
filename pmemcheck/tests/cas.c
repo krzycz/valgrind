@@ -15,10 +15,21 @@
 #include "common.h"
 #include <stdint.h>
 
+#define _mm_clflush(addr)\
+        asm volatile("clflush %0" : "+m" (*(volatile char *)addr));
+#define _mm_clflushopt(addr)\
+        asm volatile(".byte 0x66; clflush %0" : "+m" (*(volatile char *)addr));
+#define _mm_clwb(addr)\
+        asm volatile(".byte 0x66, 0x0f, 0xae, 0x30" : "+m" (*(volatile char *)addr));
+#define _mm_sfence()\
+        asm volatile(".byte 0x0f, 0xae, 0xf8");
+
 #define FILE_SIZE (16 * 1024 * 1024)
 
 int main ( void )
 {
+    int32_t tmp = 0;
+
     /* make, map and register a temporary file */
     void *base = make_map_tmpfile(FILE_SIZE);
 
@@ -31,6 +42,14 @@ int main ( void )
     __sync_bool_compare_and_swap(i16p, *i16p + 1, 1);
     __sync_bool_compare_and_swap(i32p, *i32p + 1, 1);
     __sync_bool_compare_and_swap(i64p, *i64p, 1);
+
+    _mm_clflushopt(i8p);
+    _mm_clflushopt(i16p);
+    _mm_clflushopt(i32p);
+    _mm_clflushopt(i64p);
+    _mm_sfence();
+
+    __sync_bool_compare_and_swap(&tmp, 0, 1);
 
     return 0;
 }

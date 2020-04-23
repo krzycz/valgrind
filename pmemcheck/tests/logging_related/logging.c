@@ -25,6 +25,8 @@
 
 int main ( void )
 {
+    int tmp = 0;
+
     /* make, map and register a temporary file */
     void *base = make_map_tmpfile(FILE_SIZE);
 
@@ -50,5 +52,8 @@ int main ( void )
     VALGRIND_PMC_EMIT_LOG(PARTIAL_REORDER);
     VALGRIND_PMC_EMIT_LOG(STOP_REORDER_FAULT);
     VALGRIND_PMC_EMIT_LOG(DEFAULT_REORDER);
+
+    __sync_bool_compare_and_swap(&tmp, 0, 1);
+
     return 0;
 }

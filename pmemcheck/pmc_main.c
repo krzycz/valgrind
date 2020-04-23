@@ -1636,8 +1636,8 @@ pmc_instrument(VgCallbackClosure *closure,
                     tl_assert(type != Ity_INVALID);
                     add_flush_event(sbOut, st->Ist.Flush.addr);
 
-		    /* treat clflush as strong memory ordered */
-		    if (st->Ist.Flush.fk == Ifk_flush)
+                    /* treat clflush as strong memory ordered */
+                    if (st->Ist.Flush.fk == Ifk_flush)
                        if (!pmem.weak_clflush)
                           add_simple_event(sbOut, do_fence, "do_fence");
                 }
@@ -1681,6 +1681,12 @@ pmc_instrument(VgCallbackClosure *closure,
             }
 
             case Ist_CAS: {
+                /*
+                 * All the LOCK-prefixed instructions count as SFENCE
+                 * as they force stronger ordering on the processor.
+                 */
+                add_simple_event(sbOut, do_fence, "do_fence");
+
                 Int dataSize;
                 IRType dataTy;
                 IRCAS *cas = st->Ist.CAS.details;
